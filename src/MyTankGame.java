@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Vector;
 
 /**
  * java draw Tank
@@ -40,8 +41,19 @@ class Mypanel extends JPanel implements KeyListener{
     // define my tank
     Hero hero = null;
 
+    Vector<EnemyTank> ets = new Vector<>();
+    int enSize = 3;
+
+
     public Mypanel(){
         hero = new Hero(100,100);
+        hero.setColor(0);
+        for ( int i =0 ; i < enSize ; i++){
+            EnemyTank et = new EnemyTank((i+1)*50,0);
+            et.setColor(1);
+            et.setDirect(2);
+            ets.add(et);
+        }
     }
     public void paint(Graphics g){
         //1 调用父类函数完成初始化
@@ -57,7 +69,10 @@ class Mypanel extends JPanel implements KeyListener{
 //        g.drawString("祖国外岁",100,100);
 
         g.setColor(Color.YELLOW);
-        drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),1);
+        this.drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),hero.getColor());
+        for (int  i = 0 ; i< ets.size() ; i++){
+            this.drawTank(ets.get(i).getX(),ets.get(i).getY(),g,ets.get(i).getDirect(),ets.get(i).getColor());
+        }
 
 
     }
@@ -67,8 +82,10 @@ class Mypanel extends JPanel implements KeyListener{
         switch (type){
             case 0:
             g.setColor(Color.YELLOW);
+            break;
             case 1:
             g.setColor(Color.CYAN);
+            break;
         }
 
 
