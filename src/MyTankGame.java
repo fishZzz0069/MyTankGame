@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
  * java draw Tank
@@ -17,6 +19,7 @@ public class MyTankGame extends JFrame{
     public MyTankGame(){
         mp = new Mypanel();
         this.add(mp);
+        this.addKeyListener(mp);
         this.setSize(400,300);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,7 +34,7 @@ public class MyTankGame extends JFrame{
 
 
 // define a class for drawing
-class Mypanel extends JPanel{
+class Mypanel extends JPanel implements KeyListener{
     //覆盖Jpanel 的 paint方法
     //Graphics 是绘图的重要类，你可以把它理解成一只画笔
     // define my tank
@@ -54,7 +57,7 @@ class Mypanel extends JPanel{
 //        g.drawString("祖国外岁",100,100);
 
         g.setColor(Color.YELLOW);
-        drawTank(hero.getX(),hero.getY(),g,0,1);
+        drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),1);
 
 
     }
@@ -71,53 +74,67 @@ class Mypanel extends JPanel{
 
         switch (direct) {
             case 0:
-            g.fill3DRect(x, y, 5, 30, true);
-            g.fill3DRect(x + 15, y, 5, 30, true);
-            g.fill3DRect(x + 5, y + 5, 10, 20, true);
-            g.fillOval(x + 5, y + 10, 10, 10);
-            g.drawLine(x + 10, y + 15, x + 10, y);
+                g.fill3DRect(x, y, 5, 30, true);
+                g.fill3DRect(x + 15, y, 5, 30, true);
+                g.fill3DRect(x + 5, y + 5, 10, 20, true);
+                g.fillOval(x + 5, y + 10, 10, 10);
+                g.drawLine(x + 10, y + 15, x + 10, y);
+                break;
+            case 1:
+                g.fill3DRect(x, y, 30, 5,false);
+                g.fill3DRect(x, y+15, 30, 5, false);
+                g.fill3DRect(x+5, y+5, 20, 10, false);
+                g.fillOval(x+10, y+5, 10, 10);
+                g.drawLine(x+15, y+10, x+30, y+10);
+                break;
+            case 2:
+                g.fill3DRect(x, y, 5, 30,false);
+                g.fill3DRect(x+15,y , 5, 30,false);
+                g.fill3DRect(x+5,y+5 , 10, 20,false);
+                g.fillOval(x+5, y+10, 10, 10);
+                g.drawLine(x+10, y+15, x+10, y+30);
+                break;
+            case 3:
+                g.fill3DRect(x, y, 30, 5,false);
+                g.fill3DRect(x, y+15, 30, 5, false);
+                g.fill3DRect(x+5, y+5, 20, 10, false);
+                g.fillOval(x+10, y+5, 10, 10);
+                g.drawLine(x+15, y+10, x, y+10);
+                break;
         }
 
 
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+        if (e.getKeyCode() == KeyEvent.VK_W){
+            this.hero.setDirect(0);
+            this.hero.moveUp();
+
+        }else if (e.getKeyCode() == KeyEvent.VK_D){
+            this.hero.setDirect(1);
+            this.hero.moveRight();
+        }else if (e.getKeyCode() == KeyEvent.VK_S){
+            this.hero.setDirect(2);
+            this.hero.mobeDown();
+        }else if (e.getKeyCode() == KeyEvent.VK_A){
+            this.hero.setDirect(3);
+            this.hero.moveLeft();
+        }
+        this.repaint();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 }
 
 
-class Tank{
-    //表示tank的横坐标
-    int x = 0;
-    //坦克的纵坐标
-    int y = 0;
-
-    public Tank(int x,int y){
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-}
-
-class Hero extends Tank{
-
-    public Hero(int x, int y) {
-        super(x, y);
-    }
-
-
-
-}
