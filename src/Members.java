@@ -17,9 +17,34 @@ class Tank{
 
     int color = 0 ;
 
+    Shot shot = null;
+
     public Tank(int x,int y){
         this.x = x;
         this.y = y;
+    }
+
+    // fire
+    public void shotEnemy(){
+
+
+        switch (this.direct){
+            case 0:
+                shot = new Shot(x+10,y,0);
+                break;
+            case 1:
+                shot = new Shot(x+30,y+10,1);
+                break;
+            case 2:
+                shot = new Shot(x+10,y+30,2);
+                break;
+            case 3:
+                shot = new Shot(x,y+10,3);
+                break;
+        }
+        Thread t = new Thread(shot);
+        t.start();
+
     }
 
     public int getX() {
@@ -100,5 +125,52 @@ class EnemyTank extends Tank{
 
     public EnemyTank(int x, int y) {
         super(x, y);
+    }
+}
+
+class Shot implements Runnable{
+
+    int x;
+    int y;
+    int direct;
+    int speed = 1;
+
+    boolean isLive = true;
+
+    public Shot(int x , int y , int direct){
+        this.x = x;
+        this.y = y;
+        this.direct = direct;
+    }
+
+
+    @Override
+    public void run() {
+        while (true){
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            switch (direct){
+                case 0:
+                    y-=speed ;
+                    break;
+                case 1:
+                    x+=speed;
+                    break;
+                case 2:
+                    y+=speed;
+                    break;
+                case 3:
+                    x-=speed;
+                    break;
+            }
+            System.out.println("x:"+x );
+            if (x<0 || x>400 || y<0 || y>300){
+                this.isLive = false;
+                break;
+            }
+        }
     }
 }
