@@ -19,6 +19,8 @@ public class MyTankGame extends JFrame{
 
     public MyTankGame(){
         mp = new Mypanel();
+        Thread t = new Thread(mp);
+        t.start();
         this.add(mp);
         this.addKeyListener(mp);
         this.setSize(400,300);
@@ -35,7 +37,7 @@ public class MyTankGame extends JFrame{
 
 
 // define a class for drawing
-class Mypanel extends JPanel implements KeyListener{
+class Mypanel extends JPanel implements KeyListener,Runnable{
     //覆盖Jpanel 的 paint方法
     //Graphics 是绘图的重要类，你可以把它理解成一只画笔
     // define my tank
@@ -72,6 +74,10 @@ class Mypanel extends JPanel implements KeyListener{
         this.drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),hero.getColor());
         for (int  i = 0 ; i< ets.size() ; i++){
             this.drawTank(ets.get(i).getX(),ets.get(i).getY(),g,ets.get(i).getDirect(),ets.get(i).getColor());
+        }
+
+        if (this.hero.shot!=null  ){
+            g.draw3DRect(this.hero.shot.x, this.hero.shot.y, 1, 1,false);
         }
 
 
@@ -144,13 +150,29 @@ class Mypanel extends JPanel implements KeyListener{
         }else if (e.getKeyCode() == KeyEvent.VK_A){
             this.hero.setDirect(3);
             this.hero.moveLeft();
+        }else if (e.getKeyCode() == KeyEvent.VK_J){
+            this.hero.shotEnemy();
+
         }
+
         this.repaint();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.repaint();
+        }
     }
 }
 
