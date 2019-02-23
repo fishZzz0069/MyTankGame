@@ -73,14 +73,67 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
         g.setColor(Color.YELLOW);
         this.drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),hero.getColor());
         for (int  i = 0 ; i< ets.size() ; i++){
-            this.drawTank(ets.get(i).getX(),ets.get(i).getY(),g,ets.get(i).getDirect(),ets.get(i).getColor());
+            if (ets.get(i).isAlive) {
+                this.drawTank(ets.get(i).getX(), ets.get(i).getY(), g, ets.get(i).getDirect(), ets.get(i).getColor());
+            }
         }
 
-        if (this.hero.shot!=null  ){
-            g.draw3DRect(this.hero.shot.x, this.hero.shot.y, 1, 1,false);
+        if (this.hero.shots!=null ){
+            for (int i = 0 ; i < hero.shots.size() ; i++) {
+                Shot s = hero.shots.get(i);
+                if (s.isLive) {
+                    g.draw3DRect(s.x, s.y, 1, 1, false);
+                }
+            }
         }
 
 
+    }
+
+    public void hitEnemyTank(){
+        for (int i = 0; i <hero.shots.size() ; i++){
+            Shot myshot = hero.shots.get(i);
+            if (myshot.isLive){
+                for (int j = 0;j <ets.size();j++){
+                    EnemyTank et = ets.get(j);
+                    if (et.isAlive){
+
+
+                        this.hitTank(myshot,et);
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    // is bullet touch the tank
+    public boolean hitTank(Shot s,Tank et){
+        boolean b2=false;
+
+
+
+        switch (et.direct){
+            case 0:
+            case 2:
+                if(s.x>et.x&&s.x<et.x+20&&s.y>et.y&&s.y<et.y+30){
+                    s.isLive = false;
+                    et.isAlive = false;
+                    b2 = true;
+
+                }
+                break;
+            case 1:
+            case 3:
+                if(s.x>et.x&&s.x<et.x+30&&s.y>et.y&&s.y<et.y+20){
+                    s.isLive = false;
+                    et.isAlive = false;
+                    b2 = true;
+                }
+                break;
+        }
+        return b2;
     }
 
     public void drawTank(int x, int y ,Graphics g , int direct , int type){
@@ -151,7 +204,10 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             this.hero.setDirect(3);
             this.hero.moveLeft();
         }else if (e.getKeyCode() == KeyEvent.VK_J){
-            this.hero.shotEnemy();
+
+            if (this.hero.shots.size() <=4) {
+                this.hero.shotEnemy();
+            }
 
         }
 
@@ -171,6 +227,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            this.hitEnemyTank();
+
             this.repaint();
         }
     }
