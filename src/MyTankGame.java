@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -46,6 +49,12 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
     Vector<EnemyTank> ets = new Vector<>();
     int enSize = 3;
 
+    Vector<Bomb> bombs = new Vector<>();
+
+    Image image1 = null;
+    Image image2 = null;
+    Image image3 = null;
+
 
     public Mypanel(){
         hero = new Hero(100,100);
@@ -56,6 +65,19 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             et.setDirect(2);
             ets.add(et);
         }
+
+        try {
+            image1 = ImageIO.read(new File("/Users/zsy/Downloads/Tank/src/bomb_1.gif"));
+            image2 = ImageIO.read(new File("/Users/zsy/Downloads/Tank/src/bomb_2.gif"));
+            image3 = ImageIO.read(new File("/Users/zsy/Downloads/Tank/src/bomb_3.gif"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // three images change become a bomb
+        //image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.gif"));
+        //image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.gif"));
+        //image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.gif"));
     }
     public void paint(Graphics g){
         //1 调用父类函数完成初始化
@@ -78,12 +100,36 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             }
         }
 
+        for (int i = 0 ; i < bombs.size() ; i++){
+            Bomb b = bombs.get(i);
+            if (b.life > 6){
+                g.drawImage(image1,b.x,b.y,30,30,this);
+            }else if (b.life >3){
+                g.drawImage(image2,b.x,b.y,30,30,this);
+
+            }else {
+                g.drawImage(image3,b.x,b.y,30,30,this);
+
+            }
+
+            b.lifeDown();
+
+            // bomb's hp equals zero
+            if (b.life == 0){
+                bombs.remove(b);
+            }
+        }
+
+
         if (this.hero.shots!=null ){
             for (int i = 0 ; i < hero.shots.size() ; i++) {
                 Shot s = hero.shots.get(i);
                 if (s.isLive) {
                     g.draw3DRect(s.x, s.y, 1, 1, false);
+                }else {
+                    hero.shots.remove(s);
                 }
+
             }
         }
 
@@ -121,17 +167,20 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
+                    Bomb b = new Bomb(et.x,et.y);
+                    bombs.add(b);
 
                 }
-                break;
             case 1:
             case 3:
                 if(s.x>et.x&&s.x<et.x+30&&s.y>et.y&&s.y<et.y+20){
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
+                    Bomb b = new Bomb(et.x,et.y);
+                    bombs.add(b);
                 }
-                break;
+
         }
         return b2;
     }
