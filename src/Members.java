@@ -1,3 +1,6 @@
+import java.awt.*;
+import java.util.Vector;
+
 public class Members {
 
 }
@@ -19,6 +22,10 @@ class Tank{
 
     Shot shot = null;
 
+    boolean isAlive = true;
+
+    Vector<Shot> shots = new Vector<>();
+
     public Tank(int x,int y){
         this.x = x;
         this.y = y;
@@ -31,15 +38,19 @@ class Tank{
         switch (this.direct){
             case 0:
                 shot = new Shot(x+10,y,0);
+                shots.add(shot);
                 break;
             case 1:
                 shot = new Shot(x+30,y+10,1);
+                shots.add(shot);
                 break;
             case 2:
                 shot = new Shot(x+10,y+30,2);
+                shots.add(shot);
                 break;
             case 3:
                 shot = new Shot(x,y+10,3);
+                shots.add(shot);
                 break;
         }
         Thread t = new Thread(shot);
@@ -121,10 +132,143 @@ class Hero extends Tank{
 }
 
 
-class EnemyTank extends Tank{
+class EnemyTank extends Tank implements Runnable{
+
+
+    boolean isLive = true;
+
+     int times = 0;
+
+    Vector<Shot> ss = new Vector<>();
+
+    // add shots
 
     public EnemyTank(int x, int y) {
         super(x, y);
+    }
+
+    @Override
+    public void run() {
+
+
+        while (true){
+
+
+            try {
+                Thread.sleep(50);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            switch (this.direct){
+                case 0:
+                    for (int i =0 ; i < 30 ; i++) {
+                        if (y > 0){
+                           y -= speed;
+                        }
+
+                        try {
+                            Thread.sleep(50);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 1:
+                    for (int i =0 ; i < 30 ; i++) {
+                        if (x<300) {
+                            x += speed;
+                        }
+
+                        try {
+                            Thread.sleep(50);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    break;
+                case 2:
+                    for (int i = 0; i < 30 ; i++) {
+                        if (y<300) {
+                            y += speed;
+                        }
+
+                        try {
+                            Thread.sleep(50);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 3:
+                    for (int i = 0;i < 30 ; i++) {
+                        if (x>0) {
+                            x -= speed;
+                        }
+
+                        try {
+                            Thread.sleep(50);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+            }
+//            if (ss.size() < 1 ){
+//                Shot s = new Shot(this.x,this.y,this.direct);
+//            }
+
+            times ++;
+            if(times%2==0)
+            {
+                if(isLive)
+                {
+                    if(ss.size()<5)
+                    {
+                        //System.out.println("et.ss.size()<5="+et.ss.size());
+                        Shot s=null;
+
+                        switch(direct)
+                        {
+                            case 0:
+                                s=new Shot(x+10,y,0);
+                                ss.add(s);
+                                break;
+                            case 1:
+                                s=new Shot(x+30,y+10,1);
+                                ss.add(s);
+                                break;
+                            case 2:
+                                s=new Shot(x+10,y+30,2);
+                                ss.add(s);
+                                break;
+                            case 3:
+                                s=new Shot(x,y+10,3);
+                                ss.add(s);
+                                break;
+                        }
+
+                        Thread t=new Thread(s);
+                        t.start();
+                    }
+                }
+            }
+
+            this.direct = (int)(Math.random()*4);
+            if (!this.isLive){
+                // if this tank is dead , break
+                break;
+            }
+
+
+
+
+        }
+
+
+
+
     }
 }
 
@@ -173,4 +317,27 @@ class Shot implements Runnable{
             }
         }
     }
+}
+
+class Bomb {
+    // define x of bomb
+    int x,y ;
+    // the Hp of Bomb
+    int life = 9;
+    boolean isLive = true;
+    public Bomb(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+    //reduce Hp
+    public void lifeDown(){
+        if (life > 0){
+            life--;
+        }else {
+            this.isLive = false;
+        }
+    }
+
+
+
 }
