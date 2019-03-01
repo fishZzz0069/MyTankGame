@@ -63,7 +63,20 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             EnemyTank et = new EnemyTank((i+1)*50,0);
             et.setColor(1);
             et.setDirect(2);
+
+
+            Thread t = new Thread(et);
+            t.start();
+
+            // add shots to enemy tank
+            Shot s = new Shot(et.getX() + 10 ,et.getY() + 30,et.getDirect());
+
+            et.ss.add(s);
+            Thread t2 = new Thread(s);
+            t2.start();
+
             ets.add(et);
+
         }
 
         try {
@@ -95,8 +108,19 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
         g.setColor(Color.YELLOW);
         this.drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),hero.getColor());
         for (int  i = 0 ; i< ets.size() ; i++){
-            if (ets.get(i).isAlive) {
-                this.drawTank(ets.get(i).getX(), ets.get(i).getY(), g, ets.get(i).getDirect(), ets.get(i).getColor());
+
+            EnemyTank et  = ets.get(i);
+
+            if (et.isAlive) {
+                this.drawTank(et.getX(), et.getY(), g, et.getDirect(), et.getColor());
+                for ( int j = 0; j < et.ss.size() ; j ++){
+                    Shot enemyShot = et.ss.get(j);
+                    if (enemyShot.isLive){
+                        g.draw3DRect(enemyShot.x, enemyShot.y, 1, 1, false);
+                    }else {
+                        et.ss.remove(enemyShot);
+                    }
+                }
             }
         }
 
@@ -260,6 +284,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
 
         }
 
+
+
         this.repaint();
     }
 
@@ -277,6 +303,47 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                 e.printStackTrace();
             }
             this.hitEnemyTank();
+
+
+            // 判断是否需要给tank加入新的子弹
+            for (int i =0 ; i <ets.size() ; i++){
+
+                EnemyTank et = ets.get(i);
+
+                System.out.println("panduan:" + et.ss.size());
+                if (et.isLive){
+                    Shot shot = null;
+                    if (et.ss.size() < 1){
+                        switch (et.direct){
+                            case 0:
+                                shot = new Shot(et.x+10,et.y,0);
+                                et.ss.add(shot);
+
+                                break;
+                            case 1:
+                                shot = new Shot(et.x+30,et.y + 10,1);
+                                et.ss.add(shot);
+
+                                break;
+                            case 2:
+                                shot = new Shot(et.x+10,et.y+30,2);
+                                et.ss.add(shot);
+
+                                break;
+                            case 3:
+                                shot = new Shot(et.x,et.y+10,3);
+                                et.ss.add(shot);
+
+                                break;
+
+                        }
+
+                        Thread t = new Thread(shot);
+                        t.start();
+                    }
+                }
+            }
+
 
             this.repaint();
         }
