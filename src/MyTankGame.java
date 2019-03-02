@@ -106,7 +106,9 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
 //        g.drawString("祖国外岁",100,100);
 
         g.setColor(Color.YELLOW);
-        this.drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),hero.getColor());
+        if (hero.isAlive) {
+            this.drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), hero.getColor());
+        }
         for (int  i = 0 ; i< ets.size() ; i++){
 
             EnemyTank et  = ets.get(i);
@@ -178,6 +180,22 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
 
     }
 
+    public void hitMe(){
+
+        for (int i = 0 ; i < this.ets.size() ; i++){
+            EnemyTank et = ets.get(i);
+            for (int j =0 ; j < et.ss.size() ; j++){
+                Shot enemtShot = et.ss.get(j);
+                if (hero.isAlive){
+                    if (this.hitTank(enemtShot,hero)){
+
+
+                    }
+                }
+            }
+        }
+    }
+
     // is bullet touch the tank
     public boolean hitTank(Shot s,Tank et){
         boolean b2=false;
@@ -195,6 +213,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     bombs.add(b);
 
                 }
+                break;
             case 1:
             case 3:
                 if(s.x>et.x&&s.x<et.x+30&&s.y>et.y&&s.y<et.y+20){
@@ -304,45 +323,9 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             }
             this.hitEnemyTank();
 
+            this.hitMe();
 
-            // 判断是否需要给tank加入新的子弹
-            for (int i =0 ; i <ets.size() ; i++){
 
-                EnemyTank et = ets.get(i);
-
-                System.out.println("panduan:" + et.ss.size());
-                if (et.isLive){
-                    Shot shot = null;
-                    if (et.ss.size() < 1){
-                        switch (et.direct){
-                            case 0:
-                                shot = new Shot(et.x+10,et.y,0);
-                                et.ss.add(shot);
-
-                                break;
-                            case 1:
-                                shot = new Shot(et.x+30,et.y + 10,1);
-                                et.ss.add(shot);
-
-                                break;
-                            case 2:
-                                shot = new Shot(et.x+10,et.y+30,2);
-                                et.ss.add(shot);
-
-                                break;
-                            case 3:
-                                shot = new Shot(et.x,et.y+10,3);
-                                et.ss.add(shot);
-
-                                break;
-
-                        }
-
-                        Thread t = new Thread(shot);
-                        t.start();
-                    }
-                }
-            }
 
 
             this.repaint();
