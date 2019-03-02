@@ -47,7 +47,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
     Hero hero = null;
 
     Vector<EnemyTank> ets = new Vector<>();
-    int enSize = 3;
+    int enSize = 6;
 
     Vector<Bomb> bombs = new Vector<>();
 
@@ -63,6 +63,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             EnemyTank et = new EnemyTank((i+1)*50,0);
             et.setColor(1);
             et.setDirect(2);
+            et.setEts(ets);
 
 
             Thread t = new Thread(et);
@@ -123,6 +124,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                         et.ss.remove(enemyShot);
                     }
                 }
+            }else {
+                ets.remove(et);
             }
         }
 
@@ -326,6 +329,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             this.hitMe();
 
 
+            System.out.println("ets size: " + ets.size());
 
 
             this.repaint();
