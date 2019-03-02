@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -15,28 +17,105 @@ import java.util.Vector;
 
 
 
-public class MyTankGame extends JFrame{
+public class MyTankGame extends JFrame implements ActionListener{
 
     Mypanel mp = null;
+    MyStartPanel msp = null;
+
+    JMenuBar jmb = null;
+
+    // start
+
+    JMenu jm1 = null;
+    JMenuItem jmi1 = null;
 
 
     public MyTankGame(){
-        mp = new Mypanel();
-        Thread t = new Thread(mp);
+//        mp = new Mypanel();
+//        Thread t = new Thread(mp);
+//        t.start();
+//        this.add(mp);
+//        this.addKeyListener(mp);
+        // create the menu
+        jmb = new JMenuBar();
+        jm1 = new JMenu("Game(G)");
+        jm1.setMnemonic('G');
+        jmi1 = new JMenuItem("start new game(N)");
+
+        //对jmi1进行响应
+        jmi1.addActionListener(this);
+        jmi1.setActionCommand("newgame");
+
+        jm1.add(jmi1);
+        jmb.add(jm1);
+
+
+
+
+
+        msp = new MyStartPanel();
+        Thread t = new Thread(msp);
         t.start();
-        this.add(mp);
-        this.addKeyListener(mp);
-        this.setSize(400,300);
+        this.setJMenuBar(jmb);
+        this.add(msp);
+        this.setSize(600,500);
         this.setVisible(true);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void main(String[] args){
         MyTankGame myTankGame = new MyTankGame();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //对用户的点击做出处理
+        if (e.getActionCommand().equals("newgame")){
+            //创建战场面板
+            mp = new Mypanel();
+            Thread t = new Thread(mp);
+            t.start();
+            this.remove(msp);
+            this.add(mp);
+            this.addKeyListener(mp);
+            this.setVisible(true);
+        }
+    }
 }
 
+
+class MyStartPanel extends JPanel implements Runnable{
+
+    int time = 0;
+
+    public void paint(Graphics g){
+        super.paint(g);
+        g.fillRect(0, 0, 400, 300);
+        if (time%2 ==0) {
+            g.setColor(Color.YELLOW);
+            Font myFont = new Font("华文新魏", Font.BOLD, 30);
+            g.setFont(myFont);
+            g.drawString("stage 1", 200, 100);
+        }
+    }
+
+    @Override
+    public void run() {
+
+
+        while (true){
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            time++;
+            this.repaint();
+        }
+    }
+}
 
 
 // define a class for drawing
