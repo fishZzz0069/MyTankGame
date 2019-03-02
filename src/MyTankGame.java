@@ -185,8 +185,10 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
 //        g.drawImage(image,90,90,200,150,this);
 //        g.drawString("祖国外岁",100,100);
 
-        g.setColor(Color.YELLOW);
+        this.showInfo(g);
+
         if (hero.isAlive) {
+            g.setColor(Color.YELLOW);
             this.drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), hero.getColor());
         }
         for (int  i = 0 ; i< ets.size() ; i++){
@@ -244,6 +246,17 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
 
     }
 
+    public void showInfo(Graphics g){
+        //画出提示信息坦克
+        this.drawTank(80,330, g, 0, 1);
+        g.setColor(Color.black);
+        g.drawString(Recorder.getEnNum()+"", 110, 350);
+        this.drawTank(130, 330, g, 0, 0);
+        g.setColor(Color.black);
+        g.drawString(Recorder.getMyLife()+"", 165, 350);
+
+    }
+
     public void hitEnemyTank(){
         for (int i = 0; i <hero.shots.size() ; i++){
             Shot myshot = hero.shots.get(i);
@@ -271,6 +284,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                 if (hero.isAlive){
                     if (this.hitTank(enemtShot,hero)){
 
+                        Recorder.reduceHeroLife();
+
 
                     }
                 }
@@ -291,6 +306,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
+                    Recorder.reduceEnNum();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
 
@@ -302,6 +318,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
+                    Recorder.reduceEnNum();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
                 }
