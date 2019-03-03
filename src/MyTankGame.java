@@ -255,6 +255,18 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
         g.setColor(Color.black);
         g.drawString(Recorder.getMyLife()+"", 165, 350);
 
+        // 画出玩家的总成绩
+        g.setColor(Color.black);
+        Font f = new Font("宋体",Font.BOLD,20);
+        g.setFont(f);
+        g.drawString("Grage:",400,20);
+
+        this.drawTank(420,60,g,0,1);
+
+        g.setColor(Color.black);
+        g.drawString(Recorder.getGetAllEnNum()+"", 460, 80);
+
+
     }
 
     public void hitEnemyTank(){
@@ -307,6 +319,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     et.isAlive = false;
                     b2 = true;
                     Recorder.reduceEnNum();
+                    Recorder.addEnNums();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
 
@@ -319,6 +332,7 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     et.isAlive = false;
                     b2 = true;
                     Recorder.reduceEnNum();
+                    Recorder.addEnNums();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
                 }
