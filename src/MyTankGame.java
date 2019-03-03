@@ -28,6 +28,9 @@ public class MyTankGame extends JFrame implements ActionListener{
 
     JMenu jm1 = null;
     JMenuItem jmi1 = null;
+    JMenuItem jmi2 = null;
+    JMenuItem jmi3 = null;
+    JMenuItem jmi4 = null;
 
 
     public MyTankGame(){
@@ -41,12 +44,28 @@ public class MyTankGame extends JFrame implements ActionListener{
         jm1 = new JMenu("Game(G)");
         jm1.setMnemonic('G');
         jmi1 = new JMenuItem("start new game(N)");
-
+        jmi2 = new JMenuItem("exit (E)");
+        jmi2.setMnemonic('E');
+        jmi3 = new JMenuItem("save exit (S)");
+        jmi3.setMnemonic('S');
+        jmi4 = new JMenuItem("Go on laset");
+        jmi4.setMnemonic('C');
         //对jmi1进行响应
         jmi1.addActionListener(this);
         jmi1.setActionCommand("newgame");
 
+        jmi2.addActionListener(this);
+        jmi2.setActionCommand("exit");
+
+        jmi3.addActionListener(this);
+        jmi3.setActionCommand("saveexit");
+
+        jmi4.addActionListener(this);
+        jmi4.setActionCommand("continue");
         jm1.add(jmi1);
+        jm1.add(jmi2);
+        jm1.add(jmi3);
+        jm1.add(jmi4);
         jmb.add(jm1);
 
 
@@ -72,13 +91,44 @@ public class MyTankGame extends JFrame implements ActionListener{
         //对用户的点击做出处理
         if (e.getActionCommand().equals("newgame")){
             //创建战场面板
-            mp = new Mypanel();
+            mp = new Mypanel("newgame");
             Thread t = new Thread(mp);
             t.start();
             this.remove(msp);
             this.add(mp);
             this.addKeyListener(mp);
             this.setVisible(true);
+        }else if (e.getActionCommand().equals("exit")){
+            //用户点击了退出
+
+            //save the grage by Recorder.class
+            Recorder.keepRecording();
+
+
+            // exit
+            System.exit(0);
+        }else if (e.getActionCommand().equals("saveexit")){
+
+            Recorder rd = new Recorder();
+            rd.setEts(mp.ets);
+
+            rd.keepRecAndEnemyTank();
+
+            System.exit(0);
+        }else if (e.getActionCommand().equals("continue")){
+
+            mp = new Mypanel("continue");
+
+
+            Thread t= new Thread(mp);
+
+            t.start();
+
+            this.remove(msp);
+            this.add(mp);
+            this.addKeyListener(mp);
+            this.setVisible(true);
+
         }
     }
 }
@@ -125,7 +175,10 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
     // define my tank
     Hero hero = null;
 
+
+
     Vector<EnemyTank> ets = new Vector<>();
+    Vector<Node> nodes = new Vector<>();
     int enSize = 6;
 
     Vector<Bomb> bombs = new Vector<>();
@@ -135,9 +188,14 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
     Image image3 = null;
 
 
-    public Mypanel(){
-        hero = new Hero(100,100);
-        hero.setColor(0);
+    public Mypanel(String flag){
+
+
+        if (flag.equals("newgame")){
+            hero = new Hero(100,100);
+            hero.setColor(0);
+
+        Recorder.getRecording();
         for ( int i =0 ; i < enSize ; i++){
             EnemyTank et = new EnemyTank((i+1)*50,0);
             et.setColor(1);
@@ -156,6 +214,34 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
             t2.start();
 
             ets.add(et);
+            }
+        }else {
+            hero = new Hero(100,100);
+            hero.setColor(0);
+            System.out.println("continue!!!!!");
+            nodes = new Recorder().getNodesAndEnNums();
+
+            for ( int i =0 ; i < nodes.size() ; i++){
+                Node node = nodes.get(i);
+                EnemyTank et = new EnemyTank(node.x,node.y);
+                et.setColor(1);
+                et.setDirect(node.direct);
+                et.setEts(ets);
+
+
+                Thread t = new Thread(et);
+                t.start();
+
+                // add shots to enemy tank
+                Shot s = new Shot(et.getX() + 10 ,et.getY() + 30,et.getDirect());
+
+                et.ss.add(s);
+                Thread t2 = new Thread(s);
+                t2.start();
+
+                ets.add(et);
+            }
+
 
         }
 
@@ -278,7 +364,10 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     if (et.isAlive){
 
 
-                        this.hitTank(myshot,et);
+                        if (this.hitTank(myshot,et)){
+                            Recorder.reduceEnNum();
+                            Recorder.addEnNums();
+                        }
                     }
                 }
             }
@@ -318,8 +407,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
-                    Recorder.reduceEnNum();
-                    Recorder.addEnNums();
+//                    Recorder.reduceEnNum();
+//                    Recorder.addEnNums();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
 
@@ -331,8 +420,8 @@ class Mypanel extends JPanel implements KeyListener,Runnable{
                     s.isLive = false;
                     et.isAlive = false;
                     b2 = true;
-                    Recorder.reduceEnNum();
-                    Recorder.addEnNums();
+//                    Recorder.reduceEnNum();
+//                    Recorder.addEnNums();
                     Bomb b = new Bomb(et.x,et.y);
                     bombs.add(b);
                 }
